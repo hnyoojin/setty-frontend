@@ -15,8 +15,9 @@ import HomeScreen       from './screens/HomeScreen';      // Home
 import CalendarScreen   from "./screens/CalendarScreen";  // Calendar
 import ScheduleInput    from './screens/ScheduleInput';
 import MessageScreen    from "./screens/MessageScreen";   // Message
-import CommunityScreen  from "./screens/CommunityScreen"; // Community
-import NewPost          from "./screens/NewPostScreen";
+import CommunityScreen  from "./screens/Community/CommunityScreen"; // Community
+import NewPost          from "./screens/Community/NewPostScreen";
+import PostDetailScreen from "./screens/Community/PostDetailScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -89,6 +90,7 @@ const App = () => {
         
         <Stack.Screen name="CommunityScreen" component={CommunityScreen}/>
         <Stack.Screen name="NewPost"         component={NewPost} options={tabScreenOptions} />
+        <Stack.Screen name="PostDetailScreen" component={PostDetailScreen} options={tabScreenOptions} />
       </Stack.Navigator>
     </NavigationContainer>
   );
