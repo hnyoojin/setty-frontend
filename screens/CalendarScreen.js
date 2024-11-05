@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput,Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { PanGestureHandler, State } from "react-native-gesture-handler";
 
 const CalendarScreen = ({ navigation, route }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendar, setCalendar] = useState([]);
   const [schedules, setSchedules] = useState([]);
-  const [todoItems, setTodoItems] = useState([]);
-  const [todoText, setTodoText] = useState('');
-
+  const translateX = useState(new Animated.Value(0))[0];
+  
   useFocusEffect(
     React.useCallback(() => {
-      // 현재 날짜 불러오기
       setCurrentDate(new Date());
 
-      // ScheduleInput에서 전달받은 일정 params
+      // ScheduleInput.js에서 전달받은 일정 params
       const receivedSchedule = route.params?.scheduleData;
       if (receivedSchedule) {
-        setSchedules([...schedules, receivedSchedule]); // schedules 배열에 새로 추가
+        setSchedules(prevSchedules => [...prevSchedules, receivedSchedule]);    
       }
     }, [route.params])
   );
@@ -26,7 +25,7 @@ const CalendarScreen = ({ navigation, route }) => {
     generateCalendar(currentDate);
   }, [currentDate, schedules]);
 
-    const generateCalendar = (date) => {
+  const generateCalendar = (date) => {
     const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
     const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     const startDay = startOfMonth.getDay();
@@ -35,10 +34,17 @@ const CalendarScreen = ({ navigation, route }) => {
     const calendarRows = [];
     let dayCounter = 1 - startDay;
 
+    // 달력 만들기
     for (let row = 0; row < 5; row++) {
       const weekCells = [];
       for (let col = 0; col < 7; col++) {
-        const daySchedules = schedules.filter(schedule => new Date(schedule.date).getDate() === dayCounter);
+        const currentDate = new Date(date.getFullYear(), date.getMonth(), dayCounter);
+        const daySchedules = schedules.filter(schedule => {
+          const scheduleStartDate = new Date(schedule.startDate);
+          const scheduleEndDate = new Date(schedule.endDate);
+          return currentDate >= scheduleStartDate && currentDate <= scheduleEndDate;
+        });
+
         weekCells.push(
           <View key={`${row}-${col}`} style={styles.weekCells}>
             <Text>{dayCounter > 0 && dayCounter <= daysInMonth ? dayCounter : ''}</Text>
@@ -61,16 +67,18 @@ const CalendarScreen = ({ navigation, route }) => {
     setCalendar(calendarRows);
   };
 
-
   const getScheduleColor = (index) => {
     const colors = ['#D1C4E9', '#9575CD', '#512DA8'];
     return colors[index % colors.length];
   };
 
-  const renderCalendar = () => {
+  const renderCalendar = (currentDate) => {
     const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
     return (
       <>
+        <View>
+          <Text style={styles.header}>{currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월</Text>
+        </View>
         <View style={styles.row}>
           {weekdays.map((day, index) => (
             <View key={index} style={styles.weekCells}>
@@ -83,43 +91,62 @@ const CalendarScreen = ({ navigation, route }) => {
     );
   };
 
-  const addTodoItem = () => {
-    if (todoText.trim() === '') {
-      Alert.alert('항목을 입력해 주세요.');
-      return;
+  const handleGesture = (event) => {
+    if (event.nativeEvent.state === State.END) {
+      const translationX = event.nativeEvent.translationX;
+      if (translationX > 50) {
+        goToPreviousMonth(); // 오른쪽으로 스와이프
+      } else if (translationX < -50) {
+        goToNextMonth(); // 왼쪽으로 스와이프
+      } else {
+        resetAnimation(); // 스와이프가 충분하지 않으면 초기화
+      }
     }
+  };
 
-    setTodoItems([...todoItems, { id: new Date().getTime(), text: todoText }]);
-    setTodoText('');
+  const goToNextMonth = () => {
+    Animated.timing(translateX, {
+      toValue: -100, // 100 픽셀 왼쪽으로 스와이프
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      const nextDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1);
+      setCurrentDate(nextDate);
+      resetAnimation();
+    });
+  };
+
+  const goToPreviousMonth = () => {
+    Animated.timing(translateX, {
+      toValue: 100, // 100 픽셀 오른쪽으로 스와이프
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      const prevDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
+      setCurrentDate(prevDate);
+      resetAnimation();
+    });
+  };
+
+  const resetAnimation = () => {
+    Animated.timing(translateX, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.calendarBox}>
-        <ScrollView style={styles.calendar}>
-          {renderCalendar()}
-        </ScrollView>
+        <PanGestureHandler onGestureEvent={Animated.event([{ nativeEvent: { translationX: translateX } }], { useNativeDriver: true })} onHandlerStateChange={handleGesture}>
+          <Animated.View style={[styles.calendar, { transform: [{ translateX }] }]}>
+            {renderCalendar(currentDate)}
+          </Animated.View>
+        </PanGestureHandler>
         <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('ScheduleInput')}>
           <Text style={styles.buttonText}>일정 추가</Text>
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.todoBox}>
-        <Text style={styles.header}>투두리스트</Text>
-        {todoItems.map(item => (
-          <Text key={item.id}>{item.text}</Text>
-        ))}
-        <View style={styles.addTodoContainer}>
-          <TextInput
-            style={styles.input}
-            value={todoText}
-            onChangeText={setTodoText}
-            placeholder="항목을 입력해 주세요"
-          />
-          <TouchableOpacity style={styles.addButton} onPress={addTodoItem}>
-            <Text style={styles.buttonText}>투두리스트 추가</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </View>
   );
@@ -132,14 +159,14 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   calendarBox: {
-    flex: 0.6,
+    flex: 0.75,
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
   },
   todoBox: {
-    flex: 0.4,
+    flex: 0.25,
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
@@ -172,7 +199,7 @@ const styles = StyleSheet.create({
   },
   scheduleText: {
     fontSize: 8,
-    color: 'white',
+    color: 'black',
   },
   addButton: {
     backgroundColor: '#7030B8',
