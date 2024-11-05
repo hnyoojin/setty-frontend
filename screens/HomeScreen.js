@@ -9,7 +9,6 @@ import {
 export default function HomeScreen({ navigation }) {
     return (
         <View style = {styles.screen}>
-          
         </View>
     )
 }
