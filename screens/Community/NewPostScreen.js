@@ -18,7 +18,7 @@ export default NewPost = ({ route, navigation }) => {
   const [isAnonymous, setIsAnonymous] = useState(false);
 
   const handleSubmit = () => {
-    const newPost = {
+    const newPost = [{
       id: Date.now().toString(),
       title,
       content,
@@ -27,7 +27,7 @@ export default NewPost = ({ route, navigation }) => {
       likes: 0,     // 좋아요 기능 추후 추가
       comments: 0,  // 댓글 기능 추후 추가
       isAnonymous,
-    };
+    }];
     route.params.onPostCreated(newPost);
     navigation.goBack();
   };
