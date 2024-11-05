@@ -15,13 +15,13 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = () => {
     if (userEmail === '') {
-      Alert.alert('이메일를 입력해주세요.');
+      Alert.alert('이메일을 입력해주세요.');
     } else if (password === '') {
       Alert.alert('비밀번호를 입력해주세요.');
     } else if (userEmail !== 'testUser' || password !== '1234') {
       Alert.alert('이메일 또는 비밀번호가 틀렸습니다.');
     } else {
-      navigation.navigate('Main');
+      navigation.navigate('Home');
     }
   };
 

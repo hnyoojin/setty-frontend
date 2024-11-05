@@ -43,7 +43,12 @@ export default NewPost = ({ route, navigation }) => {
             onChangeText={setTitle}
           />
           <View style={styles.anonymousToggle}>
-            <Text>Anonymous</Text>
+            <Text style={{
+              color: 'gray',
+              fontWeight: 800,
+              fontSize: Platform.OS === 'ios' ? 16 : 16,
+            }}>
+            익명</Text>
             <Switch style={styles.switch} value={isAnonymous} onValueChange={setIsAnonymous} />
           </View>
           <TextInput

@@ -20,22 +20,22 @@ const UserInfoScreen = ({ navigation }) => {
 
   const checkDuplicateEmail = () => {
     if (userEmail === 'existingUser') {
-      setAlertMessage('사용 불가한 이메일입니다.');
+      Alert.alert('사용 불가한 이메일입니다.');
       setShowAlert(true);
     } else {
-      Alert.alert('이메일 사용 가능');
+      Alert.alert('사용 가능한 이메일입니다.');
     }
   };
 
   const handleSignUp = () => {
     if (userEmail === '') {
-      setAlertMessage('이메일를 입력해주세요.');
-      setShowAlert(true);
+      Alert.alert('이메일을 입력해주세요.');
+      //setShowAlert(true);
     } else if (password === '') {
-      setAlertMessage('비밀번호를 입력해주세요.');
-      setShowAlert(true);
+      Alert.alert('비밀번호를 입력해주세요.');
+      //setShowAlert(true);
     } else if (password !== confirmPassword) {
-      setPasswordError(true);
+      //setPasswordError(true);
     } else {
       navigation.navigate('Home');
     }

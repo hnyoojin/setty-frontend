@@ -26,7 +26,7 @@ export default function MessageScreen({ navigation }) {
     return (
         // 입력창 클릭시, 입력창이 키보드 위로 가게 하는 코드
         <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior={Platform.OS === 'ios' ? 'padding' : 100}
             style={styles.screen}
             keyboardVerticalOffset={90}
         >
@@ -63,10 +63,10 @@ const styles = StyleSheet.create({
     screen: {
         flex: 1,
         backgroundColor: '#E5D0FD',
-        padding: '5%',
+        padding: Platform.OS === 'ios' ? '5%' : 15,
     },
     listContainer: {
-        paddingBottom: '0%',
+        paddingBottom: Platform.OS === 'ios' ? '0%' : 0,
     },
     messageContainer: {
         alighSelf: 'flex-end',
@@ -76,14 +76,14 @@ const styles = StyleSheet.create({
     message: {
         backgroundColor: '#fff',
         padding: '3%',
-        borderRadius: 40,
+        borderRadius: Platform.OS === 'ios' ? '10%' : 20,
         maxWidth: '80%',
         alignSelf: 'flex-end',
     },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: '3%',
+        marginTop: Platform.OS === 'ios' ? '5%' : 15,
     },
     input: {
         flex: 1,
@@ -93,13 +93,13 @@ const styles = StyleSheet.create({
         borderRadius: Platform.OS === 'ios' ? '2.5%' : 5,
         padding: '3%',
         marginRight: '5%',
-        marginBottom: '3%',
+        marginBottom: Platform.OS === 'ios' ? '3%' : 0,
     },
     sendButton: {
         backgroundColor: '#7030B8',
         padding: '3%',
         borderRadius: Platform.OS === 'ios' ? '2.5%' : 3,
-        marginBottom: '3%',
+        marginBottom: Platform.OS === 'ios' ? '3%' : 0,
     },
     sendButtonText: {
         color: '#fff',
