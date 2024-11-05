@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     top: '40%',
     backgroundColor: '#fff',
     padding: 20,
-    borderRadius: 10,
+    borderRadius: Platform.OS === 'ios' ? '5%' : 10,
     width: '80%',
     alignItems: 'center',
     borderWidth: 1,
