@@ -13,10 +13,10 @@ import HomeScreen       from './screens/HomeScreen';      // Home
 import CalendarScreen   from "./screens/CalendarScreen";  // Calendar
 import ScheduleInput    from './screens/ScheduleInput';
 import MessageScreen    from "./screens/MessageScreen";   // Message
-import CommunityScreen  from "./screens/Community/CommunityScreen"; // Community
-import NewPostScreen    from "./screens/Community/NewPostScreen";
-import PostDetailScreen from "./screens/Community/PostDetailScreen";
-import SearchScreen     from './screens/Community/SearchScreen';
+import CommunityScreen  from "./screens/Community/Community/CommunityScreen"; // Community
+import SearchScreen     from './screens/Community/Community/SearchScreen';
+import NewPostScreen    from "./screens/Community/NewPost/NewPostScreen";
+import PostDetailScreen from "./screens/Community/PostDetail/PostDetailScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

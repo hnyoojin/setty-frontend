@@ -12,21 +12,22 @@ import {
   Keyboard
 } from 'react-native';
 
-export default NewPost = ({ route, navigation }) => {
+const NewPost = ({ route, navigation }) => {
+
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
 
-  const handleSubmit = () => {
+  const handlePostSubmit = () => {
     const newPost = [{
-      id: Date.now().toString(),
-      title,
-      content,
-      author: isAnonymous ? '익명' : '사용자',
-      createdAt: new Date().toISOString().split('T')[0],
-      likes: 0,     // 좋아요 기능 추후 추가
-      comments: 0,  // 댓글 기능 추후 추가
-      isAnonymous,
+        id: Date.now().toString(),
+        title,
+        content,
+        author: isAnonymous ? '익명' : '사용자',
+        createdAt: new Date().toISOString().split('T')[0],
+        likes: 0,
+        comments: 0,
+        isAnonymous,
     }];
     route.params.onPostCreated(newPost);
     navigation.goBack();
@@ -61,7 +62,7 @@ export default NewPost = ({ route, navigation }) => {
           />
         </ScrollView>
         <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <TouchableOpacity style={styles.button} onPress={handlePostSubmit}>
               <Text style={styles.buttonText}>작성 완료</Text>
             </TouchableOpacity>
         </View>
@@ -123,3 +124,5 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
+
+export default NewPost;
