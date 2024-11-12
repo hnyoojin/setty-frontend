@@ -10,11 +10,9 @@ const PostHeader = ({ post, likes, comments, isLiked, onLikePress }) => (
     <Text style={styles.info}>{post.createdAt} | {post.isAnonymous ? '익명' : post.author}</Text>
     <Text style={styles.content}>{post.content}</Text>
     <Text style={styles.stats}>Likes: {likes} • Comments: {comments.length}</Text>
+    
     <View style={styles.buttonContainer}>
-      <TouchableOpacity
-        style={[styles.button, isLiked && styles.liked]}
-        onPress={onLikePress}
-      >
+      <TouchableOpacity style={styles.button} onPress={onLikePress}>
         <Ionicons
           name={isLiked ? 'heart' : 'heart-outline'}
           size={24}

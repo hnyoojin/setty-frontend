@@ -13,23 +13,33 @@ const PostDetailScreen = ({ route }) => {
   const [likes, setLikes] = useState(post.likes);
   const [isLiked, setIsLiked] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
-  
   const mockData = [
     {
+      postId: 0,
       id: 0,
       content: '히히 안녕하세요',
       createdAt: getCurrentDate(),
       author: '황유진',
       likes: 1,
       isAnonymous: false,
+    },
+    {
+      postId: 1,
+      id: 0,
+      content: '안녕하세요... 도와주세요',
+      createdAt: getCurrentDate(),
+      author: '왕왕',
+      likes: 1,
+      isAnonymous: false,
     }
   ];
-
   const [comments, setComments] = useState(mockData);
 
-  const postComment = () => {
+
+  const postComment = ({ post }) => {
     if (input.trim()) {
       const newComment = {
+        postId: post.id,
         id: Date.now().toString(),
         content: input,
         createdAt: getCurrentDate(),
@@ -46,7 +56,9 @@ const PostDetailScreen = ({ route }) => {
     <View style={styles.screenContainer}>
       <FlatList
         data={comments}
-        renderItem={({ item }) => <CommentItem item={item} />}
+        renderItem={({ item }) => (
+          item.postId === post.id ? <CommentItem item={item} /> : null // 조건부 렌더링
+        )}
         keyExtractor={(item) => item.id.toString()}
         ListHeaderComponent={() => (
           <PostHeader
@@ -57,9 +69,6 @@ const PostDetailScreen = ({ route }) => {
             onLikePress={() => {
               setLikes(isLiked ? likes - 1 : likes + 1);
               setIsLiked(!isLiked);
-              if (onLikeUpdate) {
-                onLikeUpdate(post.id, likes);
-              }
             }}
           />
         )}
@@ -69,7 +78,11 @@ const PostDetailScreen = ({ route }) => {
         style={styles.screen}
         keyboardVerticalOffset={105}
       >
-        <CommentInput input={input} setInput={setInput} onSubmit={postComment} />
+        <CommentInput 
+          input={input}  
+          setInput={setInput} 
+          onSubmit={postComment} 
+        />
       </KeyboardAvoidingView>
     </View>
   );
