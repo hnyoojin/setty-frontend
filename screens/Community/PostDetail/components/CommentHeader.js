@@ -6,7 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const CommentHeader = ({ item }) => {
     
-    const [likes, setLikes] = useState(item.likes);
+    const [likes, setLikes] = useState(item.likes || 0); // post.likes가 숫자가 아닐 경우 0으로 설정
     const [isLiked, setIsLiked] = useState(false);
 
     const onReplyPress=()=>{};

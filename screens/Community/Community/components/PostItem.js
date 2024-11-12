@@ -6,10 +6,10 @@ const PostItem = ({ item, navigation, updateLikes }) => (
     key={item.id} 
     onPress={() => navigation.navigate('PostDetailScreen', {
       post: item,
-      onLikeUpdate: () => 
-        updateLikes({ 
-          postId: item.id, 
-          newLikes: item.likes + 1 })
+      likes: item.likes,
+      comments: item.comments,
+      onLikeUpdate: (postId, newLikes) => 
+        updateLikes({ postId, newLikes }) // 함수 참조 전달
     })}
   >
     <View style={styles.postContainer}>

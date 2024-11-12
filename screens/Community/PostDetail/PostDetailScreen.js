@@ -7,10 +7,10 @@ import CommentItem    from './components/CommentItem';
 import CommentInput   from './components/CommentInput';
 
 const PostDetailScreen = ({ route }) => {
-  const { post, onLikeUpdate } = route.params;
+  const { post, likes: initialLikes, comments: initialComments, onLikeUpdate } = route.params;
 
   const [input, setInput] = useState('');
-  const [likes, setLikes] = useState(post.likes);
+  const [likes, setLikes] = useState(initialLikes);
   const [isLiked, setIsLiked] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
   const mockData = [
@@ -33,8 +33,8 @@ const PostDetailScreen = ({ route }) => {
       isAnonymous: false,
     }
   ];
-  const [comments, setComments] = useState(mockData);
 
+  const [comments, setComments] = useState(initialComments || mockData);
 
   const postComment = () => {
     if (input.trim()) {
@@ -64,11 +64,15 @@ const PostDetailScreen = ({ route }) => {
           <PostHeader
             post={post}
             likes={likes}
-            comments={comments}
+            comments={comments.length}
             isLiked={isLiked}
             onLikePress={() => {
-              setLikes(isLiked ? likes - 1 : likes + 1);
+              const newLikes = isLiked ? likes - 1 : likes + 1;
+              setLikes(newLikes);
               setIsLiked(!isLiked);
+              if (onLikeUpdate) {
+                onLikeUpdate(post.id, newLikes);
+              }
             }}
           />
         )}

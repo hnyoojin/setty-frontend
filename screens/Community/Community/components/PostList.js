@@ -13,7 +13,7 @@ const PostList = ({ posts, navigation, updateLikes }) => (
         updateLikes={updateLikes} 
       />
     )}
-    keyExtractor={(item) => item.id.toString()}
+    keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
   />
 );
 

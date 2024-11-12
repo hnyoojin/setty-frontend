@@ -1,34 +1,27 @@
 import React, { useState } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  TextInput, 
-  Text, 
-  SafeAreaView,
-  Switch,
-  TouchableOpacity,
-  ScrollView,
-  Platform,
-  Keyboard
-} from 'react-native';
+import { StyleSheet, View, TextInput, Text, SafeAreaView, Switch, TouchableOpacity, ScrollView, Platform, Keyboard } from 'react-native';
+
+import getCurrentDate from '../../components/getCurrentDate';
 
 const NewPost = ({ route, navigation }) => {
 
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState([]);
+  const [content, setContent] = useState([]);
+  const [likes, setLikes] = useState(0);
+  const [comments, setComments] = useState(0);
   const [isAnonymous, setIsAnonymous] = useState(false);
 
   const handlePostSubmit = () => {
-    const newPost = [{
+    const newPost = {
         id: Date.now().toString(),
-        title,
-        content,
+        title: title,
+        content: content,
         author: isAnonymous ? '익명' : '사용자',
-        createdAt: new Date().toISOString().split('T')[0],
-        likes: 0,
-        comments: 0,
-        isAnonymous,
-    }];
+        createdAt: getCurrentDate(),
+        likes: likes,
+        comments: comments,
+        isAnonymous: false,
+    };
     route.params.onPostCreated(newPost);
     navigation.goBack();
   };
@@ -37,21 +30,26 @@ const NewPost = ({ route, navigation }) => {
     <View style={styles.screenContainer}>
       <View style={styles.container}>
         <ScrollView keyboardDismissMode="on-drag">
+          {/*Title Input*/}
           <TextInput
             style={styles.inputTitle}
             placeholder="Title"
             value={title}
             onChangeText={setTitle}
           />
-          <View style={styles.anonymousToggle}>
-            <Text style={{
-              color: 'gray',
-              fontWeight: 800,
-              fontSize: Platform.OS === 'ios' ? 16 : 16,
-            }}>
-            익명</Text>
-            <Switch style={styles.switch} value={isAnonymous} onValueChange={setIsAnonymous} />
+
+          {/*toggle button : anonymous <-> user name*/}
+          <View>
+            <Text style={styles.anonymousToggle}>
+              {isAnonymous ? 'anonymous' : 'user name'} {/* 상태에 따른 텍스트 변경 */}
+            </Text>
+            <Switch
+              style={styles.switch}
+              value={isAnonymous}
+              onValueChange={(value) => setIsAnonymous(value)} // 스위치 값 변경 시 상태 업데이트
+            />
           </View>
+
           <TextInput
             style={styles.inputContent}
             placeholder="내용을 입력하세요"
@@ -102,7 +100,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 10,
   },
-  // anonymousToggle: {},
+  anonymousToggle: {
+    color: 'gray',
+    fontWeight: 800,
+    fontSize: Platform.OS === 'ios' ? 16 : 16,
+  },
   // contentInput: {},
   
   // button style

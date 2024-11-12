@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     width: "92%",
     backgroundColor: '#fff',
     borderRadius: 10,
-    marginTop: 10,
+    marginTop: 5,
     padding: 15,
   },
   commentContent: {
