@@ -86,14 +86,14 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     reply: {
-        marginLeft: 3,
-        marginRight: 7,
+        marginLeft: 7,
+        marginRight: 9,
     },
     likes: {
-        marginRight: 5,
+        marginRight: 7,
     },
     ellip: {
-        marginRight: 3,
+        marginRight: 5,
     },
 });
 export default CommentHeader;

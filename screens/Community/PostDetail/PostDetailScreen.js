@@ -76,7 +76,7 @@ const PostDetailScreen = ({ route }) => {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 100}
         style={styles.screen}
-        keyboardVerticalOffset={105}
+        keyboardVerticalOffset={90}
       >
         <CommentInput 
           input={input}  
