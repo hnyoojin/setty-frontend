@@ -73,12 +73,12 @@ const tabScreenOptions = {
 };
 
 const App = () => {
-  const [scheduleArray, setScheduleArray] = useState([]); // scheduleArray 상태 관리
+  /*const [schedules, setSchedules] = useState([]); // schedule 상태 관리
 
   // 새로운 일정 추가 함수
   const addSchedule = (schedule) => {
-    setScheduleArray((prevSchedules) => [...prevSchedules, schedule]);
-  };
+    setSchedules([...schedules, schedule]);
+  };*/
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
@@ -86,12 +86,9 @@ const App = () => {
         <Stack.Screen name="UserType" component={UserTypeScreen}  options={tabScreenOptions} />
         <Stack.Screen name="UserInfo" component={UserInfoScreen}  options={tabScreenOptions} />
         <Stack.Screen name="Home"     component={TabNavigator}    options={{ headerShown: false }} />
-
-        <Stack.Screen name="CalendarScreen" component={CalendarScreen}  options={{ title: '캘린더' }} />
-        {/*<Stack.Screen name="MonthlyScreen"  component={MonthlyScreen}   options={{ title: '일정 관리' }} />*/}
-        <Stack.Screen name="ScheduleInput"  component={ScheduleInput}   options={{ title: '일정 추가' }} />
-        
-        <Stack.Screen name="CommunityScreen" component={CommunityScreen}/>
+        <Stack.Screen name="CalendarScreen" component={CalendarScreen} options={tabScreenOptions}/>  
+        <Stack.Screen name="ScheduleInput" component={ScheduleInput} options={tabScreenOptions}/>
+        <Stack.Screen name="CommunityScreen" component={CommunityScreen} options={tabScreenOptions}/>
         <Stack.Screen name="NewPost"         component={NewPost} options={tabScreenOptions} />
         <Stack.Screen name="PostDetailScreen" component={PostDetailScreen} options={tabScreenOptions} />
       </Stack.Navigator>

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native
 import { useFocusEffect } from '@react-navigation/native';
 import { PanGestureHandler,State } from 'react-native-gesture-handler';
 
-const CalendarScreen = ({ navigation,route }) => {
+  const CalendarScreen = ({ route,navigation }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [calendar, setCalendar] = useState([]);
   const [schedules, setSchedules] = useState([]);
@@ -11,35 +11,42 @@ const CalendarScreen = ({ navigation,route }) => {
   const [selectedDateSchedules, setSelectedDateSchedules] = useState([]);
   const translateX = useState(new Animated.Value(0))[0];
 
-  useEffect(() => {
-    // 새 일정이 있을 경우 추가
-    if (route.params?.newSchedule) {
-      setScheduleArray((prevSchedules) => [...prevSchedules, route.params.newSchedule]);
-    }
-  }, [route.params?.newSchedule]);
-
   useFocusEffect(
     React.useCallback(() => {
       setCurrentDate(new Date());
-      const receivedSchedule = route.params?.scheduleData;
+      const receivedSchedule = route.params?.schedule;
       if (receivedSchedule) {
         setSchedules(prevSchedules => [...prevSchedules, receivedSchedule]);
+        //확인용
+        console.log(receivedSchedule);
       }
-    }, [route.params])
+    }, [route.params?.schedule])
   );
-
+    
   //선택한 날짜의 일정을 가져오는 함수
   const getSchedulesForDate = (date) => {
     return schedules.filter(schedule => {
       const scheduleStartDate = new Date(schedule.startDate);
       const scheduleEndDate = new Date(schedule.endDate);
 
-    //날짜 비교 (시작과 끝 날짜를 setHours로 맞춰서 비교)
-    scheduleStartDate.setHours(0, 0, 0, 0);
-    scheduleEndDate.setHours(23, 59, 59, 999);
+    // 날짜를 UTC 기준으로 변환
+    const utcDate = new Date(date);
+    utcDate.setUTCHours(0, 0, 0, 0); // UTC 기준으로 00:00:00으로 설정
 
-    return date >= scheduleStartDate && date <= scheduleEndDate;
-    });
+    // startDate와 endDate를 UTC 기준으로 변환하여 비교
+    const utcStartDate = new Date(scheduleStartDate);
+    const utcEndDate = new Date(scheduleEndDate);
+
+    utcStartDate.setUTCHours(0, 0, 0, 0);
+    utcEndDate.setUTCHours(23, 59, 59, 999);
+
+    console.log("Checking Date:", utcDate);
+    console.log("Start Date:", utcStartDate);
+    console.log("End Date:", utcEndDate);
+
+    // 날짜 비교 (UTC 기준으로 비교)
+    return utcDate >= utcStartDate && utcDate <= utcEndDate;
+  });
   };
 
   //해당 날짜를 눌렀을 때 일정을 가져오는 함수
@@ -49,10 +56,10 @@ const CalendarScreen = ({ navigation,route }) => {
     setSelectedDate(selectedDate);
   };
 
-  //스와이프나 스케줄 추가 시 달력을 새롭게 생성하는 함수 -> 문제가 있음 파일 저장할 때마다 같은 일정이 반복해서 추가돼요
+  //스와이프할 때마다 달력을 새롭게 생성하는 함수 -> 문제가 있음 파일 저장할 때마다 같은 일정이 반복해서 추가돼요
   useEffect(() => {
     generateCalendar(currentDate);
-  }, [currentDate,schedules]); //스케줄에 의존
+  }, [currentDate,schedules]); //현재 날짜에 의존
 
   //스와이프 애니메이션
   const goToNextMonth = () => {

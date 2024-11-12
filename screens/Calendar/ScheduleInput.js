@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Platform,Text } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Platform,Text,Alert } from 'react-native';
 
-const ScheduleInput=({ route, navigation })=> {
-  const { addSchedule } = route.params;  // App.js에서 전달받은 addSchedule 함수
+const ScheduleInput=({ navigation })=> {
+  //const schedules = route.params;
   const [eventName, setEventName] = useState('');
   const [startYear, setStartYear] = useState('');
   const [startMonth, setStartMonth] = useState('');
@@ -10,11 +10,16 @@ const ScheduleInput=({ route, navigation })=> {
   const [endYear, setEndYear] = useState('');
   const [endMonth, setEndMonth] = useState('');
   const [endDay, setEndDay] = useState('');
+  const [startHour, setStartHour] = useState('');
+  const [startMinute, setStartMinute] = useState('');
+  const [endHour, setEndHour] = useState('');
+  const [endMinute, setEndMinute] = useState('');
 
   //스케줄 저장
   const saveSchedule = () => {
-    const scheduleStartDate = `${startYear}-${startMonth}-${startDay}`;
-    const scheduleEndDate = `${endYear}-${endMonth}-${endDay}`;
+    const scheduleStartDate = `${startYear}-${startMonth.padStart(2, '0')}-${startDay.padStart(2, '0')}T${startHour.padStart(2, '0')}:${startMinute.padStart(2, '0')}:00`;
+    const scheduleEndDate = `${endYear}-${endMonth.padStart(2, '0')}-${endDay.padStart(2, '0')}T${endHour.padStart(2, '0')}:${endMinute.padStart(2, '0')}:00`;
+    if(eventName && startYear && startMonth && startDay && startHour&&startMinute&& endYear && endMonth && endDay && endHour && endMinute){
     const schedule = {
       sid: new Date().getTime(),
       event: eventName,
@@ -22,11 +27,9 @@ const ScheduleInput=({ route, navigation })=> {
       endDate: scheduleEndDate,
     };
 
-    // App.js의 addSchedule 함수로 일정 추가
-    addSchedule(schedule);
+    //addSchedule(schedule);
+    navigation.navigate('CalendarScreen',{schedule:schedule});
 
-    // 일정 저장 후 캘린더 화면으로 이동
-    navigation.navigate('CalendarScreen', { scheduleData: schedule });
     //확인용
     console.log('Saved Date:',schedule);
     //저장 후 화면 초기화
@@ -41,6 +44,10 @@ const ScheduleInput=({ route, navigation })=> {
     setEndDay('');
     setEndHour('');
     setEndMinute('');
+    }
+    else{
+      Alert.alert('모든 영역을 입력해주세요.');
+    }
   };
 
   return (
