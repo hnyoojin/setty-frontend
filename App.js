@@ -1,7 +1,5 @@
-import React from 'react';
-import { 
-  Platform
-} from 'react-native';
+import React, {useState} from 'react';
+import {Platform} from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,8 +10,8 @@ import LoginScreen      from './screens/LoginScreen';     // Login
 import UserTypeScreen   from './screens/UserTypeScreen';
 import UserInfoScreen   from './screens/UserInfoScreen';
 import HomeScreen       from './screens/HomeScreen';      // Home
-import CalendarScreen   from "./screens/CalendarScreen";  // Calendar
-import ScheduleInput    from './screens/ScheduleInput';
+import CalendarScreen   from "./screens/Calendar/CalendarScreen";  // Calendar
+import ScheduleInput    from './screens/Calendar/ScheduleInput';
 import MessageScreen    from "./screens/MessageScreen";   // Message
 import CommunityScreen  from "./screens/Community/CommunityScreen"; // Community
 import NewPost          from "./screens/Community/NewPostScreen";
@@ -21,7 +19,6 @@ import PostDetailScreen from "./screens/Community/PostDetailScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
 
 const TabNavigator = () => {
   return (
@@ -76,6 +73,12 @@ const tabScreenOptions = {
 };
 
 const App = () => {
+  const [scheduleArray, setScheduleArray] = useState([]); // scheduleArray 상태 관리
+
+  // 새로운 일정 추가 함수
+  const addSchedule = (schedule) => {
+    setScheduleArray((prevSchedules) => [...prevSchedules, schedule]);
+  };
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">

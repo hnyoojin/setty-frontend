@@ -1,35 +1,32 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Platform,Text } from 'react-native';
 
-const ScheduleInput = ({ navigation }) => {
+const ScheduleInput=({ route, navigation })=> {
+  const { addSchedule } = route.params;  // App.js에서 전달받은 addSchedule 함수
   const [eventName, setEventName] = useState('');
   const [startYear, setStartYear] = useState('');
-  const [startMonth, setStartMonth]=useState('');
-  const [startDay, setStartDay]=useState('');
-  const [startHour, setStartHour] = useState('');
-  const [startMinute, setStartMinute]=useState('');
+  const [startMonth, setStartMonth] = useState('');
+  const [startDay, setStartDay] = useState('');
   const [endYear, setEndYear] = useState('');
-  const [endMonth, setEndMonth]=useState('');
-  const [endDay, setEndDay]=useState('');
-  const [endHour, setEndHour] = useState('');
-  const [endMinute, setEndMinute]=useState('');
-
-  let scheduleArray=[];
+  const [endMonth, setEndMonth] = useState('');
+  const [endDay, setEndDay] = useState('');
 
   //스케줄 저장
   const saveSchedule = () => {
-    //사용자에게 입력받는 방식(근데 직접 입력 받는 방식이 좀 번거로울 것 같아서 개선할까 고민 중입니다)
-    const scheduleStartDate=`${startYear}-${startMonth}-${startDay}`;
-    const scheduleEndDate=`${endYear}-${startMonth}-${endDay}`;
-    const schedule={
+    const scheduleStartDate = `${startYear}-${startMonth}-${startDay}`;
+    const scheduleEndDate = `${endYear}-${endMonth}-${endDay}`;
+    const schedule = {
       sid: new Date().getTime(),
       event: eventName,
-      startDate:scheduleStartDate,
-      endDate:scheduleEndDate,
-    }
-    //배열에 저장
-    scheduleArray.push(schedule);
-    navigation.navigate('CalendarScreen', {scheduleData: schedule});
+      startDate: scheduleStartDate,
+      endDate: scheduleEndDate,
+    };
+
+    // App.js의 addSchedule 함수로 일정 추가
+    addSchedule(schedule);
+
+    // 일정 저장 후 캘린더 화면으로 이동
+    navigation.navigate('CalendarScreen', { scheduleData: schedule });
     //확인용
     console.log('Saved Date:',schedule);
     //저장 후 화면 초기화
