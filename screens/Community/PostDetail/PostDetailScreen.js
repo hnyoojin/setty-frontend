@@ -36,7 +36,7 @@ const PostDetailScreen = ({ route }) => {
   const [comments, setComments] = useState(mockData);
 
 
-  const postComment = ({ post }) => {
+  const postComment = () => {
     if (input.trim()) {
       const newComment = {
         postId: post.id,
