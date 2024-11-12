@@ -111,41 +111,50 @@ import { PanGestureHandler,State } from 'react-native-gesture-handler';
     const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     const startDay = startOfMonth.getDay();
     const daysInMonth = endOfMonth.getDate();
-
     const calendarRows = [];
     let dayCounter = 1 - startDay;
-
-    for (let row = 0; row < 5; row++) {
+  
+    for (let row = 0; row < 6; row++) {
       const weekCells = [];
       for (let col = 0; col < 7; col++) {
         const currentDate = new Date(date.getFullYear(), date.getMonth(), dayCounter);
         const daySchedules = schedules.filter(schedule => {
           const scheduleStartDate = new Date(schedule.startDate);
           const scheduleEndDate = new Date(schedule.endDate);
+  
+          // 날짜 비교 (시작과 끝 날짜를 setHours로 맞춰서 비교)
+          scheduleStartDate.setHours(0, 0, 0, 0);
+          scheduleEndDate.setHours(23, 59, 59, 999);
+  
           return currentDate >= scheduleStartDate && currentDate <= scheduleEndDate;
         });
-
+  
         weekCells.push(
-          <TouchableOpacity key={`${row}-${col}`} style={styles.weekCells} onPress={() => onDatePress(currentDate)}>
+          <TouchableOpacity
+            key={`${row}-${col}`}
+            style={styles.weekCells}
+            onPress={() => onDatePress(currentDate)}
+          >
             <Text>{dayCounter > 0 && dayCounter <= daysInMonth ? dayCounter : ''}</Text>
-
+  
             {/* 일정 렌더링 */}
             {daySchedules.slice(0, 3).map((schedule, index) => {
-              let scheduleStartDate = new Date(schedule.startDate);
-              let scheduleEndDate = new Date(schedule.endDate);
+              const scheduleStartDate = new Date(schedule.startDate);
+              const scheduleEndDate = new Date(schedule.endDate);
               const scheduleColor = getScheduleColor(index);
-
+              const isStartDate = scheduleStartDate.getDate() === currentDate.getDate();
+  
               // 시작일과 종료일에 걸쳐 있는 일정을 직선으로 렌더링
-              for (let i = scheduleStartDate.getDate(); i <= scheduleEndDate.getDate(); i++) {
-                const scheduleKey = `${schedule.sid}-${i}`;
-                return (
-                  <View key={scheduleKey} style={[styles.scheduleBar, { backgroundColor: scheduleColor }]}>
-                    <Text style={styles.scheduleText}>{schedule.event}</Text>
-                  </View>
-                );
-              }
-            }
-          )}
+              return (
+                <View
+                  key={`${schedule.sid}-${index}`}
+                  style={[styles.scheduleBar,{backgroundColor:scheduleColor}]}
+                >
+                  <Text style={styles.scheduleText}>{isStartDate ? schedule.event :''}</Text>
+                </View>
+              );
+            })}
+            
           </TouchableOpacity>
         );
         dayCounter++;
@@ -156,9 +165,10 @@ import { PanGestureHandler,State } from 'react-native-gesture-handler';
         </View>
       );
     }
-
+  
     setCalendar(calendarRows);
   };
+  
 
   const getScheduleColor = (index) => {
     const colors = ['#D1C4E9', '#9575CD', '#512DA8'];
@@ -232,7 +242,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   weekCells: {
-    borderWidth: 1,
+    borderWidth: 0,
     borderColor: '#000',
     width: '13%',
     height: 65,
@@ -243,11 +253,13 @@ const styles = StyleSheet.create({
     height: 12,
     marginTop: 2,
     borderRadius: 2,
-    width:'100%',
+    width:'115%',
+    zIndex: 999, //overlap
   },
   scheduleText: {
-    fontSize: 8,
+    fontSize: 11,
     color: 'black',
+    textAlign:'center',
   },
   selectedDateBox: {
     position: 'absolute',
