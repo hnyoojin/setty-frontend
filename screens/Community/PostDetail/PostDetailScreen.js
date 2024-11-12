@@ -34,7 +34,7 @@ const PostDetailScreen = ({ route }) => {
     }
   ];
 
-  const [comments, setComments] = useState(initialComments || mockData);
+  const [comments, setComments] = useState(mockData);
 
   const postComment = () => {
     if (input.trim()) {
@@ -64,7 +64,7 @@ const PostDetailScreen = ({ route }) => {
           <PostHeader
             post={post}
             likes={likes}
-            comments={comments.length}
+            comments={comments.filter(comment => comment.postId === post.id).length} // 특정 postId에 맞는 댓글 개수 전달
             isLiked={isLiked}
             onLikePress={() => {
               const newLikes = isLiked ? likes - 1 : likes + 1;
