@@ -191,7 +191,7 @@ import { PanGestureHandler,State } from 'react-native-gesture-handler';
         </View>
         {calendar}
 
-        {/* 선택된 날짜의 일정 표시 */}
+        {/* 선택된 날짜의 일정 표시 -이 부분 지금 제대로 안 됨*/}
         {selectedDateSchedules.length > 0 && (
           <View style={styles.selectedDateBox}>
             <Text style={styles.selectedDateText}>{selectedDate?.toDateString()}</Text>

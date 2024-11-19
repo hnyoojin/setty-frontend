@@ -16,6 +16,9 @@ import MessageScreen    from "./screens/MessageScreen";   // Message
 import CommunityScreen  from "./screens/Community/CommunityScreen"; // Community
 import NewPost          from "./screens/Community/NewPostScreen";
 import PostDetailScreen from "./screens/Community/PostDetailScreen";
+import GetCurrentDate from "./screens/Calendar/components/GetCurrentDate";
+import GetScheduleDate from "./screens/Calendar/components/GetScheduleDate";
+import GetScheduleTime from "./screens/Calendar/components/GetScheduleTime";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -91,6 +94,8 @@ const App = () => {
         <Stack.Screen name="CommunityScreen" component={CommunityScreen} options={tabScreenOptions}/>
         <Stack.Screen name="NewPost"         component={NewPost} options={tabScreenOptions} />
         <Stack.Screen name="PostDetailScreen" component={PostDetailScreen} options={tabScreenOptions} />
+        <Stack.Screen name="GetScheduleDate" component={GetScheduleDate} options={tabScreenOptions} />
+        <Stack.Screen name="GetScheduleTime" component={GetScheduleTime} options={tabScreenOptions} />
       </Stack.Navigator>
     </NavigationContainer>
   );
