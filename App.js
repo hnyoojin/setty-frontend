@@ -1,7 +1,5 @@
 import React from 'react';
-import { 
-  Platform
-} from 'react-native';
+import { Platform } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -15,9 +13,10 @@ import HomeScreen       from './screens/HomeScreen';      // Home
 import CalendarScreen   from "./screens/CalendarScreen";  // Calendar
 import ScheduleInput    from './screens/ScheduleInput';
 import MessageScreen    from "./screens/MessageScreen";   // Message
-import CommunityScreen  from "./screens/Community/CommunityScreen"; // Community
-import NewPost          from "./screens/Community/NewPostScreen";
-import PostDetailScreen from "./screens/Community/PostDetailScreen";
+import CommunityScreen  from "./screens/Community/Community/CommunityScreen"; // Community
+import SearchScreen     from './screens/Community/Community/SearchScreen';
+import NewPostScreen    from "./screens/Community/NewPost/NewPostScreen";
+import PostDetailScreen from "./screens/Community/PostDetail/PostDetailScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -88,9 +87,10 @@ const App = () => {
         {/*<Stack.Screen name="MonthlyScreen"  component={MonthlyScreen}   options={{ title: '일정 관리' }} />*/}
         <Stack.Screen name="ScheduleInput"  component={ScheduleInput}   options={{ title: '일정 추가' }} />
         
-        <Stack.Screen name="CommunityScreen" component={CommunityScreen}/>
-        <Stack.Screen name="NewPost"         component={NewPost} options={tabScreenOptions} />
+        <Stack.Screen name="Community"  component={CommunityScreen} options={tabScreenOptions}/>
+        <Stack.Screen name="NewPost"    component={NewPostScreen} options={tabScreenOptions} />
         <Stack.Screen name="PostDetailScreen" component={PostDetailScreen} options={tabScreenOptions} />
+        <Stack.Screen name="SearchScreen"     component={SearchScreen} options={tabScreenOptions} />
       </Stack.Navigator>
     </NavigationContainer>
   );
