@@ -13,12 +13,14 @@ import HomeScreen       from './screens/HomeScreen';      // Home
 import CalendarScreen   from "./screens/Calendar/CalendarScreen";  // Calendar
 import ScheduleInput    from './screens/Calendar/ScheduleInput';
 import MessageScreen    from "./screens/MessageScreen";   // Message
-import CommunityScreen  from "./screens/Community/CommunityScreen"; // Community
-import NewPost          from "./screens/Community/NewPostScreen";
-import PostDetailScreen from "./screens/Community/PostDetailScreen";
+
 import GetCurrentDate from "./screens/Calendar/components/GetCurrentDate";
 import GetScheduleDate from "./screens/Calendar/components/GetScheduleDate";
 import GetScheduleTime from "./screens/Calendar/components/GetScheduleTime";
+import CommunityScreen  from "./screens/Community/Community/CommunityScreen"; // Community
+import SearchScreen     from './screens/Community/Community/SearchScreen';
+import NewPostScreen    from "./screens/Community/NewPost/NewPostScreen";
+import PostDetailScreen from "./screens/Community/PostDetail/PostDetailScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -91,11 +93,13 @@ const App = () => {
         <Stack.Screen name="Home"     component={TabNavigator}    options={{ headerShown: false }} />
         <Stack.Screen name="CalendarScreen" component={CalendarScreen} options={tabScreenOptions}/>  
         <Stack.Screen name="ScheduleInput" component={ScheduleInput} options={tabScreenOptions}/>
-        <Stack.Screen name="CommunityScreen" component={CommunityScreen} options={tabScreenOptions}/>
-        <Stack.Screen name="NewPost"         component={NewPost} options={tabScreenOptions} />
-        <Stack.Screen name="PostDetailScreen" component={PostDetailScreen} options={tabScreenOptions} />
         <Stack.Screen name="GetScheduleDate" component={GetScheduleDate} options={tabScreenOptions} />
         <Stack.Screen name="GetScheduleTime" component={GetScheduleTime} options={tabScreenOptions} />
+        
+        <Stack.Screen name="Community"  component={CommunityScreen} options={tabScreenOptions}/>
+        <Stack.Screen name="NewPost"    component={NewPostScreen} options={tabScreenOptions} />
+        <Stack.Screen name="PostDetailScreen" component={PostDetailScreen} options={tabScreenOptions} />
+        <Stack.Screen name="SearchScreen"     component={SearchScreen} options={tabScreenOptions} />
       </Stack.Navigator>
     </NavigationContainer>
   );
