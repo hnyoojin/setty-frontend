@@ -1,7 +1,9 @@
-import React from 'react';
-import { 
-  Platform
-} from 'react-native';
+import 'react-native-gesture-handler';
+import React, {useState} from 'react';
+import {Platform} from 'react-native';
+
+import { enableScreens } from 'react-native-screens';
+enableScreens();
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,21 +14,26 @@ import LoginScreen      from './screens/LoginScreen';     // Login
 import UserTypeScreen   from './screens/UserTypeScreen';
 import UserInfoScreen   from './screens/UserInfoScreen';
 import HomeScreen       from './screens/HomeScreen';      // Home
-import CalendarScreen   from "./screens/CalendarScreen";  // Calendar
-import ScheduleInput    from './screens/ScheduleInput';
+import CalendarScreen   from "./screens/Calendar/CalendarScreen";  // Calendar
+import ScheduleInput    from './screens/Calendar/ScheduleInput';
 import MessageScreen    from "./screens/MessageScreen";   // Message
-import CommunityScreen  from "./screens/CommunityScreen"; // Community
-import NewPost          from "./screens/NewPostScreen";
+
+import GetCurrentDate from "./screens/Calendar/components/GetCurrentDate";
+import GetScheduleDate from "./screens/Calendar/components/GetScheduleDate";
+import GetScheduleTime from "./screens/Calendar/components/GetScheduleTime";
+import CommunityScreen  from "./screens/Community/Community/CommunityScreen"; // Community
+import SearchScreen     from './screens/Community/Community/SearchScreen';
+import NewPostScreen    from "./screens/Community/NewPost/NewPostScreen";
+import PostDetailScreen from "./screens/Community/PostDetail/PostDetailScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
 
 const TabNavigator = () => {
   return (
     <Tab.Navigator
       
-      initialRouteName="Back"
+      initialRouteName="Home"
 
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
@@ -75,6 +82,12 @@ const tabScreenOptions = {
 };
 
 const App = () => {
+  /*const [schedules, setSchedules] = useState([]); // schedule 상태 관리
+
+  // 새로운 일정 추가 함수
+  const addSchedule = (schedule) => {
+    setSchedules([...schedules, schedule]);
+  };*/
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
@@ -82,13 +95,15 @@ const App = () => {
         <Stack.Screen name="UserType" component={UserTypeScreen}  options={tabScreenOptions} />
         <Stack.Screen name="UserInfo" component={UserInfoScreen}  options={tabScreenOptions} />
         <Stack.Screen name="Home"     component={TabNavigator}    options={{ headerShown: false }} />
-
-        <Stack.Screen name="CalendarScreen" component={CalendarScreen}  options={{ title: '캘린더' }} />
-        {/*<Stack.Screen name="MonthlyScreen"  component={MonthlyScreen}   options={{ title: '일정 관리' }} />*/}
-        <Stack.Screen name="ScheduleInput"  component={ScheduleInput}   options={{ title: '일정 추가' }} />
+        <Stack.Screen name="CalendarScreen" component={CalendarScreen} options={tabScreenOptions}/>  
+        <Stack.Screen name="ScheduleInput" component={ScheduleInput} options={tabScreenOptions}/>
+        <Stack.Screen name="GetScheduleDate" component={GetScheduleDate} options={tabScreenOptions} />
+        <Stack.Screen name="GetScheduleTime" component={GetScheduleTime} options={tabScreenOptions} />
         
-        <Stack.Screen name="CommunityScreen" component={CommunityScreen}/>
-        <Stack.Screen name="NewPost"         component={NewPost} options={tabScreenOptions} />
+        <Stack.Screen name="Community"  component={CommunityScreen} options={tabScreenOptions}/>
+        <Stack.Screen name="NewPost"    component={NewPostScreen} options={tabScreenOptions} />
+        <Stack.Screen name="PostDetailScreen" component={PostDetailScreen} options={tabScreenOptions} />
+        <Stack.Screen name="SearchScreen"     component={SearchScreen} options={tabScreenOptions} />
       </Stack.Navigator>
     </NavigationContainer>
   );
