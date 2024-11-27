@@ -9,7 +9,34 @@ import {
 
 // 회원 가입 정보 창으로 이동
 const UserTypeScreen = ({ navigation }) => {
+  /*
+  const API_URL = '';
 
+  const handleUserType = async (type) => {
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userType: type }),
+      });
+      const responseData = await response.json();
+
+      if (response.ok && responseData.success) {
+        Alert('User Type 받기 성공', responseData.message);
+        navigation.navigate('UserInfo');
+      }
+      else {
+        Alert.alert('실패..', responseData.error || 'Unknown Error...');
+      }
+    }
+    catch (error) {
+      console.error(error);
+      Alert.alert('오류 발생..', '네트워크 문제 or 서버 오류 발생');
+    }
+  }
+  */
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>당신은{'\n'}한국 생활에{'\n'}대하여...</Text>
