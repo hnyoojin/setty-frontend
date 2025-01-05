@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
-import React, {useState} from 'react';
-import {Platform} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Platform, View, Text} from 'react-native';
 
 import { enableScreens } from 'react-native-screens';
 enableScreens();
@@ -9,6 +9,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+// import axios from 'axios';
 
 import LoginScreen      from './screens/LoginScreen';     // Login
 import UserTypeScreen   from './screens/UserTypeScreen';
@@ -88,6 +89,19 @@ const App = () => {
   const addSchedule = (schedule) => {
     setSchedules([...schedules, schedule]);
   };*/
+/*
+  const [hello, setHello] = useState('');
+  useEffect(()=>{
+    axios.get("http://localhost:80/api/hello")
+    .then(response=>setHello(response.data))
+    .catch(error=>console.log(error))
+  },[]);
+  return (
+    <View>
+      <Text>{`${hello}`}</Text>
+    </View>
+  )
+*/
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
