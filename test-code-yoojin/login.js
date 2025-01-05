@@ -8,13 +8,12 @@ import {
   TouchableOpacity,
   Platform
 } from 'react-native';
-import axios from 'axios';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
+  const handlelogin = () => {
       if (email.trim() === "") {
           Alert.alert("이메일를 입력해 주세요.");
       }
@@ -22,7 +21,7 @@ const LoginScreen = ({ navigation }) => {
           Alert.alert("비밀번호를 입력해 주세요.");
       }
       else {
-          axios.post("http://localhost:80/api/??",
+          axios.post("api/UserInfoScreen",
               null,
               { params: {email: email, password: password} }
           ).then(function(response) {

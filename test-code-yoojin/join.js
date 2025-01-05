@@ -9,21 +9,19 @@ import {
   StyleSheet,
   Platform
 } from 'react-native';
-import API from "../API";
+import axios from 'axios';
 
 const UserInfoScreen = ({ navigation }) => {
   // 백엔드 API
   const API_URL = "http://localhost:80/api/register";
   
   const [email, setEmail] = useState("");
-  const [nickname, setNickname] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPW, setConfirmPW] = useState("");
-  const [errors, setErrors] = useState({});
+  const [existEmail, setExistEmail] = useState("");
 
   // 이메일 중복 확인
-  const checkEmail = () => {
-    axios.get(API + "exist", {params: {email: email}})
+  const handleSignUp = () => {
+    axios.get(API_URL + "exist", {params: {email: email}})
     .then((response) => {
         if (response.data.email === email) {
             setExistEmail('exist Email')
@@ -38,79 +36,53 @@ const UserInfoScreen = ({ navigation }) => {
     .catch((error) => console.log(error))
   }
 
-  // 닉네임 중복 확인
-  const chechNickname = () => {
-
-  }
-
   // 회원가입 처리
   const onPressJoin = () => {
-    const userData = {
+    let request = {
         email: email,
-        nickname: nickname,
         password: password
     }
 
-    if (userData.email === "" || userData.nickname === "" || userData.password === "") {
+    if (request.email === "" || request.password === "") {
         Alert.alert("입력을 완료해주세요.");
     }
-    else if (userData.password !== confirmPW){
-      Alert.alert("비밀번호가 다릅니다.");
-    }
-
     else {
-      API.post('/register', userData)
+      axios.post(API_URL + "join", request)
       .then((response) => {
-        console.log(response.data);
-        Alert.alert(`환영합니다, ${nickname}님!`);
-        setErrors({});
-        navigation.navigate('Home');
-      })
-      .catch((error) => {
-        if (error.response && error.response.data) {
-          console.error('Error data : '. error.response.data);
-          setErrors(error.response.data);
-          // Alert.alert(`가입 실패 : ${error.response.data.error}`);
-          Alert.alert("[이메일 형식]\nexample@gmail.com\n\n[비밀번호 규칙]\n영문 대,소문자 포함\n 숫자, 특수기호 하나 이상 포함\n 8자 ~ 20자");
+        console.log("data : ", response.data)
+        if (response.data === 'success') {
+          navigation.navigate('HomeScreen')
+          Alert.alert("가입 성공!")
         }
         else {
-          console.error('Error: ', error);
-          Alert.alert('Error');
+          Alert.alert("가입 실패, 다시 시도해주세요")
         }
-      });
+      })
+      .catch((error) => console.log(error))
     }
-  };
+  }
 
   return (
     <View style={styles.container}>
+      {showAlert && (
+        <View style={styles.alertBox}>
+          <Text>{alertMessage}</Text>
+          <Button title="확인" onPress={() => setShowAlert(false)} />
+        </View>
+      )}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>이메일</Text>
         <TextInput
           style={styles.input}
-          value={email}
-          onChangeText={setEmail}
+          value={userEmail}
+          onChangeText={setUserEmail}
         />
         <TouchableOpacity 
           style={styles.duplicateButton} 
-          onPress={checkEmail}>
+          onPress={handleSignUp}>
           <Text style={styles.duplicateButtonText}>중복확인</Text>
         </TouchableOpacity>
       </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>닉네임</Text>
-        <TextInput
-          style={styles.input}
-          value={nickname}
-          onChangeText={setNickname}
-        />
-        <TouchableOpacity 
-          style={styles.duplicateButton} 
-          onPress={chechNickname}>
-          <Text style={styles.duplicateButtonText}>중복확인</Text>
-        </TouchableOpacity>
-      </View>
-
 
       <View style={styles.inputContainer}>
         <Text style={styles.label}>비밀번호</Text>
@@ -126,10 +98,11 @@ const UserInfoScreen = ({ navigation }) => {
         <Text style={styles.label}>비밀번호 확인</Text>
         <TextInput
           style={styles.input}
-          value={confirmPW}
-          onChangeText={setConfirmPW}
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
           secureTextEntry={true}
         />
+        {passwordError && <Text style={styles.errorText}>비밀번호가 다릅니다.</Text>}
       </View>
 
       <TouchableOpacity 
