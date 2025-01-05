@@ -18,9 +18,9 @@ import CalendarScreen   from './screens/Calendar/CalendarScreen';  // Calendar
 import ScheduleInput    from './screens/Calendar/ScheduleInput';
 import MessageScreen    from './screens/MessageScreen';   // Message
 
-import GetCurrentDate from './screens/Calendar/components/GetCurrentDate';
-import GetScheduleDate from './screens/Calendar/components/GetScheduleDate';
-import GetScheduleTime from './screens/Calendar/components/GetScheduleTime';
+import { ScheduleProvider } from './screens/components/scheduleContext';
+import GetScheduleDate from './screens/Calendar/components/getScheduleDate';
+import GetScheduleTime from './screens/Calendar/components/getScheduleTime';
 import CommunityScreen  from './screens/Community/Community/CommunityScreen'; // Community
 import SearchScreen     from './screens/Community/Community/SearchScreen';
 import NewPostScreen    from './screens/Community/NewPost/NewPostScreen';
@@ -83,24 +83,26 @@ const tabScreenOptions = {
 
 const App = () => {
   return (
-    <NavigationContainer>
+    <ScheduleProvider>
+      <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login"    component={LoginScreen}     options={tabScreenOptions} />
         <Stack.Screen name="UserType" component={UserTypeScreen}  options={tabScreenOptions} />
         <Stack.Screen name="UserInfo" component={UserInfoScreen}  options={tabScreenOptions} />
         <Stack.Screen name="Home"     component={TabNavigator}    options={{ headerShown: false }} />
-        <Stack.Screen name="CalendarScreen" component={CalendarScreen} options={tabScreenOptions}/>  
+        <Stack.Screen name="CalendarScreen" component={CalendarScreen} options={tabScreenOptions}/>
         <Stack.Screen name="ScheduleInput" component={ScheduleInput} options={tabScreenOptions}/>
         <Stack.Screen name="GetScheduleDate" component={GetScheduleDate} options={tabScreenOptions} />
         <Stack.Screen name="GetScheduleTime" component={GetScheduleTime} options={tabScreenOptions} />
-        
         <Stack.Screen name="Community"  component={CommunityScreen} options={tabScreenOptions}/>
         <Stack.Screen name="NewPost"    component={NewPostScreen} options={tabScreenOptions} />
         <Stack.Screen name="PostDetailScreen" component={PostDetailScreen} options={tabScreenOptions} />
         <Stack.Screen name="SearchScreen"     component={SearchScreen} options={tabScreenOptions} />
       </Stack.Navigator>
-    </NavigationContainer>
+      </NavigationContainer>
+    </ScheduleProvider>
   );
 };
 
 export default App;
+
