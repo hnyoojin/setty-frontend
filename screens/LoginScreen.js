@@ -8,40 +8,48 @@ import {
   TouchableOpacity,
   Platform
 } from 'react-native';
-import axios from 'axios';
+import API from "../API";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-      if (email.trim() === "") {
-          Alert.alert("이메일를 입력해 주세요.");
-      }
-      else if (password.trim() === "") {
-          Alert.alert("비밀번호를 입력해 주세요.");
-      }
-      else {
-          axios.post("http://localhost:80/api/??",
-              null,
-              { params: {email: email, password: password} }
-          ).then(function(response) {
-              console.log(response.data);
-              if (response.data !== null && response.data !== "") {
-                  console.log("로그인 성공!!");
-                  navigation.navigate('HomeScreen');
-              }
-              else {
-                  Alert.alert("로그인 실패", "이메일이나 비밀번호를 확인하세요.");
-                  setEmail("");
-                  setPassword("");
-              }
-          }).catch(function(error) {
-                  console.log(`Error Message: ${error}`);
-          })
-      }
+    const loginData = {
+      email: email,
+      password: password
+  }
+    if (email === "") {
+      Alert.alert("이메일를 입력해 주세요.");
     }
+    else if (password === "") {
+      Alert.alert("비밀번호를 입력해 주세요.");
+    }
+    else {
+      API.post('/login', loginData)
+        .then((response) => {
+          console.log(response.data);
+          const { token, nickname } = response.data;
 
+          AsyncStorage.setItem('token', token); // 토큰 저장  
+          Alert.alert(`반갑습니다, ${nickname}님!`);
+          
+          navigation.navigate('Home');
+        })
+        .catch((error) => {
+          if (error.response && error.response.data) {
+            console.error('Error data : ', error.response.data);
+
+            Alert.alert(`로그인 실패 : ${error.response.data.message}`);
+          }
+          else {
+            console.error('Error : ', error);
+            Alert.alert('로그인 중 문제 발생');
+          }
+        })
+    }
+  }
   return (
     <View style={styles.container}>
       <TextInput
