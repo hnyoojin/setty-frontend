@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, AsyncStorage } from 'react-native';
 
 import getCurrentDate from '../../components/getCurrentDate';
 import PostList       from './components/PostList';

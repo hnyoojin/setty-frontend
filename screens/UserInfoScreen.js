@@ -12,9 +12,6 @@ import {
 import API from "../API";
 
 const UserInfoScreen = ({ navigation }) => {
-  // 백엔드 API
-  const API_URL = "http://localhost:80/api/register";
-  
   const [email, setEmail] = useState("");
   const [nickname, setNickname] = useState("");
   const [password, setPassword] = useState("");

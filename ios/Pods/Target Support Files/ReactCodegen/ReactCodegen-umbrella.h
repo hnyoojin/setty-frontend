@@ -43,6 +43,8 @@
 #import "react/renderer/components/safeareacontext/RCTComponentViewHelpers.h"
 #import "react/renderer/components/safeareacontext/ShadowNodes.h"
 #import "react/renderer/components/safeareacontext/States.h"
+#import "rnasyncstorage/rnasyncstorage.h"
+#import "rnasyncstorageJSI.h"
 #import "RNDatePickerSpecs/RNDatePickerSpecs.h"
 #import "RNDatePickerSpecsJSI.h"
 #import "RNDateTimePickerCGen/RNDateTimePickerCGen.h"

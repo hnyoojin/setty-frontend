@@ -4,13 +4,13 @@ import GetScheduleDate from './components/GetScheduleDate';
 import GetScheduleTime from './components/GetScheduleTime';
 
 const ScheduleInput = ({ navigation }) => {
-  const [eventName, setEventName] = useState('');
-  const [selectedStartDate, setSelectedStartDate] = useState(new Date());
-  const [selectedStartTime, setSelectedStartTime] = useState(new Date());
-  const [selectedEndDate, setSelectedEndDate] = useState(new Date());
-  const [selectedEndTime, setSelectedEndTime] = useState(new Date());
-  const [modalVisible, setModalVisible] = useState(false);
-  const [currentType, setCurrentType] = useState('');  // 'start' or 'end' type
+  let [eventName, setEventName] = useState('');
+  let [selectedStartDate, setSelectedStartDate] = useState(new Date());
+  let [selectedStartTime, setSelectedStartTime] = useState(new Date());
+  let [selectedEndDate, setSelectedEndDate] = useState(new Date());
+  let [selectedEndTime, setSelectedEndTime] = useState(new Date());
+  let [modalVisible, setModalVisible] = useState(false);
+  let [currentType, setCurrentType] = useState('');  // 'start' or 'end' type
 
   // 날짜 모달 열기
   const openDateModal = (type) => {
@@ -55,11 +55,15 @@ const ScheduleInput = ({ navigation }) => {
       endTime: selectedEndTime,
     };
 
-    navigation.navigate('CalendarScreen', { schedule: schedule });
-
-    console.log('Saved Schedule:', schedule);
+    navigation.setParams({ schedule });
+    navigation.goBack();
+    console.log('보낸 스케줄:', schedule);
     setEventName('');
   };
+  //문제1: CalendarScreen으로 직접 이동하는 것과 goBack을 통해 이동한 Calendar 페이지는 다름
+  //문제2: modal의 Date와 Time이 각각 해당하는 데이터만을 가지도록(이건 toString으로 분할하면 될 것 같음)
+  //문제3: 일정 누르면 나오게
+  //문제4: 날짜 우리나라 기준으로...
 
   return (
     <View style={styles.container}>
