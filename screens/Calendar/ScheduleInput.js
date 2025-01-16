@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import GetScheduleDate from './components/GetScheduleDate';
-import GetScheduleTime from './components/GetScheduleTime';
+import GetScheduleDate from './components/getScheduleDate';
+import GetScheduleTime from './components/getScheduleTime';
+import { useSchedule } from '../components/scheduleContext';
 
 const ScheduleInput = ({ navigation }) => {
-  let [eventName, setEventName] = useState('');
-  let [selectedStartDate, setSelectedStartDate] = useState(new Date());
-  let [selectedStartTime, setSelectedStartTime] = useState(new Date());
-  let [selectedEndDate, setSelectedEndDate] = useState(new Date());
-  let [selectedEndTime, setSelectedEndTime] = useState(new Date());
-  let [modalVisible, setModalVisible] = useState(false);
-  let [currentType, setCurrentType] = useState('');  // 'start' or 'end' type
+  const [eventName, setEventName] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentType, setCurrentType] = useState('');  // 'start' or 'end' type
+  const { addSchedule,schedules }=useSchedule();
+
+  // 시간을 맞추는 함수
+  const adjustTimeByHours = (date, hours) => {
+    const adjustedDate = new Date(date.getTime() + hours * 60 * 60 * 1000);
+    return adjustedDate;
+  };
+
+  const [selectedStartDate, setSelectedStartDate] = useState(adjustTimeByHours(new Date(),9));
+  const [selectedStartTime, setSelectedStartTime] = useState(adjustTimeByHours(new Date(), 9));
+  const [selectedEndDate, setSelectedEndDate] = useState(adjustTimeByHours(new Date(),9));
+  const [selectedEndTime, setSelectedEndTime] = useState(adjustTimeByHours(new Date(), 9)); 
 
   // 날짜 모달 열기
   const openDateModal = (type) => {
@@ -46,8 +55,8 @@ const ScheduleInput = ({ navigation }) => {
 
   // 일정 저장
   const saveSchedule = () => {
-    const schedule = {
-      sid: new Date().getTime(),
+    const newSchedule = {
+      sid: new Date().getTime().toString(),
       event: eventName,
       startDate: selectedStartDate,
       startTime: selectedStartTime,
@@ -55,15 +64,15 @@ const ScheduleInput = ({ navigation }) => {
       endTime: selectedEndTime,
     };
 
-    navigation.setParams({ schedule });
-    navigation.goBack();
-    console.log('보낸 스케줄:', schedule);
+    addSchedule(newSchedule);
+    console.log('보낸 스케줄 from ScheduleInput\n', JSON.stringify(newSchedule,null,2));
     setEventName('');
+    navigation.goBack();
   };
-  //문제1: CalendarScreen으로 직접 이동하는 것과 goBack을 통해 이동한 Calendar 페이지는 다름
-  //문제2: modal의 Date와 Time이 각각 해당하는 데이터만을 가지도록(이건 toString으로 분할하면 될 것 같음)
-  //문제3: 일정 누르면 나오게
-  //문제4: 날짜 우리나라 기준으로...
+
+  useEffect(() => {
+    console.log('스케줄 상태 업데이트됨 from ScheduleInput\n', JSON.stringify(schedules, null, 2));
+  }, [schedules]);
 
   return (
     <View style={styles.container}>

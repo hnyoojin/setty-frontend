@@ -1,62 +1,108 @@
-import React, { useState, useEffect,useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { PanGestureHandler,State } from 'react-native-gesture-handler';
+import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Alert,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  FlatList,
+} from 'react-native';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
+import { useSchedule } from '../components/scheduleContext';
 
-  const CalendarScreen = ({ route,navigation }) => {
-  let [currentDate, setCurrentDate] = useState(new Date());
-  let [calendar, setCalendar] = useState([]);
-  let [schedules, setSchedules] = useState([]);
-  let [selectedDate, setSelectedDate] = useState();
-  let [selectedDateSchedules, setSelectedDateSchedules] = useState([]);
+const CalendarScreen = ({ navigation }) => {
+  const { schedules,currentDate, setCurrentDate, filteredSchedules, deleteSchedule } = useSchedule();
   const translateX = useState(new Animated.Value(0))[0];
+  const [calendar, setCalendar] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDateSchedules, setSelectedDateSchedules] = useState([]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      setCurrentDate(new Date());
-      const receivedSchedule = route.params?.schedule;
-      if (receivedSchedule) {
-        setSchedules(prevSchedules => [...prevSchedules, receivedSchedule]);
-        //확인용
-        console.log(`받은 일정: ${receivedSchedule}`);
+  const generateCalendar = useCallback(() => {
+    console.log('현재 저장된 스케줄\n', JSON.stringify(schedules,null,2));
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const startDay = startOfMonth.getDay();
+    const daysInMonth = endOfMonth.getDate();
+    const calendarRows = [];
+
+    const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+    calendarRows.push(
+      <View key="weekDays" style={styles.row}>
+        {weekDays.map((day, index) => (
+          <Text key={index} style={styles.weekDay}>
+            {day}
+          </Text>
+        ))}
+      </View>
+    );
+
+    let dayCounter = 1 - startDay;
+
+    for (let row = 0; row < 6; row++) {
+      const weekCells = [];
+      for (let col = 0; col < 7; col++) {
+        const nowDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), dayCounter);
+        const daySchedules = filteredSchedules.filter((schedule) => {
+          const scheduleStartDate = new Date(schedule.startDate);
+          const scheduleEndDate = new Date(schedule.endDate);
+          return (
+            nowDate.toDateString() === scheduleStartDate.toDateString() || // 시작일이 현재 날짜와 동일
+            (nowDate >= scheduleStartDate && nowDate <= scheduleEndDate)   // 현재 날짜가 일정 기간 내에 포함
+          );
+        });
+
+        weekCells.push(
+          <TouchableOpacity
+            key={`${row}-${col}`}
+            style={styles.weekCells}
+            onPress={() => {
+              setSelectedDate(nowDate);
+              setSelectedDateSchedules(daySchedules);
+            }}
+          >
+            <Text>{dayCounter > 0 && dayCounter <= daysInMonth ? dayCounter : ''}</Text>
+            {daySchedules.slice(0, 3).map((schedule, index) => (
+              <View
+                key={schedule.sid}
+                style={[
+                  styles.scheduleBar,
+                  { backgroundColor: getScheduleColor(index) },
+                ]}
+              >
+              <Text style={index === 2 ? styles.scheduleText2 : styles.scheduleText1}>{schedule.event}</Text>
+              </View>
+            ))}
+          </TouchableOpacity>
+        );
+        dayCounter++;
       }
-    }, [route.params?.schedule])
-  );
+      calendarRows.push(
+        <View key={row} style={styles.row}>
+          {weekCells}
+        </View>
+      );
+    }
 
-  //선택한 날짜의 일정을 가져오는 함수
-  const getSchedulesForDate = useCallback((date) => {
-    return schedules.filter(schedule => {
-      const scheduleStartDate = new Date(schedule.startDate);
-      const scheduleEndDate = new Date(schedule.endDate);
+    setCalendar(calendarRows);
+  }, [currentDate, filteredSchedules,schedules]);
 
-    // 날짜를 UTC 기준으로 변환
-    const utcDate = new Date(date);
-    utcDate.setUTCHours(0, 0, 0, 0); // UTC 기준으로 00:00:00으로 설정
+  useEffect(() => {
+    generateCalendar();
+  }, [generateCalendar,filteredSchedules]);
 
-    // startDate와 endDate를 UTC 기준으로 변환하여 비교
-    const utcStartDate = new Date(scheduleStartDate);
-    const utcEndDate = new Date(scheduleEndDate);
+  const getScheduleColor = (index) => {
+    const colors = ['#D1C4E9', '#9575CD', '#512DA8'];
+    return colors[index % colors.length];
+  };
 
-    utcStartDate.setUTCHours(0, 0, 0, 0);
-    utcEndDate.setUTCHours(23, 59, 59, 999);
-
-    console.log('Checking Date:', utcDate);
-    console.log('Start Date:', utcStartDate);
-    console.log('End Date:', utcEndDate);
-
-    // 날짜 비교 (UTC 기준으로 비교)
-    return utcDate >= utcStartDate && utcDate <= utcEndDate;
-  });
-  },[schedules]);
-
-  //스와이프 애니메이션
   const goToNextMonth = () => {
     Animated.timing(translateX, {
       toValue: -100, // 100 픽셀 왼쪽으로 스와이프
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
-      const nextDate = new Date(currentDate.getFullYear(), currentDate.getMonth()+1);
+      const nextDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1);
       setCurrentDate(nextDate);
       resetAnimation();
     });
@@ -87,120 +133,57 @@ import { PanGestureHandler,State } from 'react-native-gesture-handler';
       if (event.nativeEvent.translationX < 0) {
         // 왼쪽으로 스와이프: 다음 달
         goToNextMonth();
-        console.log('다음 달로 이동');
       } else {
         // 오른쪽으로 스와이프: 이전 달
         goToPreviousMonth();
-        console.log('이전 달로 이동');
       }
     }
   };
 
-  useEffect(() => {
-    const calendarRows = generateCalendar(currentDate);
-    setCalendar(calendarRows);
-  }, [generateCalendar, currentDate]);
-
-  useEffect(() => {
-    const calendarRows = generateCalendar(currentDate);
-    setCalendar(calendarRows);
-  }, [generateCalendar,currentDate, schedules]);
-
-  const generateCalendar = useCallback((date) => {
-    //해당 날짜를 눌렀을 때 일정을 가져오는 함수
-    const onDatePress = () => {
-    const schedulesForDate = getSchedulesForDate(selectedDate);
-    setSelectedDateSchedules(schedulesForDate);
-    setSelectedDate(selectedDate);
-    };
-
-    const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-    const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-    const startDay = startOfMonth.getDay();
-    const daysInMonth = endOfMonth.getDate();
-    const calendarRows = [];
-    let dayCounter = 1 - startDay;
-
-    for (let row = 0; row < 6; row++) {
-      const weekCells = [];
-      for (let col = 0; col < 7; col++) {
-        const nowDate = new Date(date.getFullYear(), date.getMonth(), dayCounter);
-        const daySchedules = schedules.filter(schedule => {
-          const scheduleStartDate = new Date(schedule.startDate);
-          const scheduleEndDate = new Date(schedule.endDate);
-
-          scheduleStartDate.setHours(0, 0, 0, 0);
-          scheduleEndDate.setHours(23, 59, 59, 999);
-
-          return nowDate >= scheduleStartDate && nowDate <= scheduleEndDate;
-        });
-
-        weekCells.push(
-          <TouchableOpacity
-            key={`${row}-${col}`}
-            style={styles.weekCells}
-            onPress={() => onDatePress(nowDate)}
-          >
-            <Text>{dayCounter > 0 && dayCounter <= daysInMonth ? dayCounter : ''}</Text>
-            {daySchedules.slice(0, 3).map((schedule, index) => {
-              const scheduleStartDate = new Date(schedule.startDate);
-              const scheduleEndDate = new Date(schedule.endDate);
-              const scheduleColor = getScheduleColor(index);
-              const isStartDate = scheduleStartDate.getDate() === nowDate.getDate();
-              return (
-                <View
-                  key={`${schedule.sid}-${index}`}
-                  style={[styles.scheduleBar, { backgroundColor: scheduleColor }]}
-                >
-                  <Text style={styles.scheduleText}>{isStartDate ? schedule.event : ''}</Text>
-                </View>
-              );
-            })}
-          </TouchableOpacity>
-        );
-        dayCounter++;
-      }
-      calendarRows.push(
-        <View key={row} style={styles.row}>
-          {weekCells}
-        </View>
-      );
-    }
-    return calendarRows;
-  },[schedules,getSchedulesForDate,selectedDate]);
-
-
-  const getScheduleColor = (index) => {
-    const colors = ['#D1C4E9', '#9575CD', '#512DA8'];
-    return colors[index % colors.length];
+  const handleSchedulePress = (schedule) => {
+    Alert.alert(
+      '스케줄 삭제',
+      '스케줄을 삭제하시겠습니까?',
+      [
+        {
+          text: '네',
+          onPress: async () => {
+            await deleteSchedule(schedule.sid); // Context에서 API 호출
+            console.log('삭제한 스케줄(from scheduleContext)\n', JSON.stringify(schedule));
+          },
+        },
+        {
+          text: '아니오',
+        },
+      ]
+    );
   };
 
-  const renderCalendar = () => {
-    const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+  const renderScheduleList = () => {
+    if (!selectedDate || selectedDateSchedules.length === 0) return null;
+
     return (
-      <>
-        <View>
-          <Text style={styles.header}>{currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월</Text>
-        </View>
-        <View style={styles.row}>
-          {weekdays.map((day, index) => (
-            <View key={index} style={styles.weekCells}>
-              <Text>{day}</Text>
-            </View>
-          ))}
-        </View>
-        {calendar}
-
-        {/* 선택된 날짜의 일정 표시 -이 부분 지금 제대로 안 됨*/}
-        {selectedDateSchedules.length > 0 && (
-          <View style={styles.selectedDateBox}>
-            <Text style={styles.selectedDateText}>{selectedDate?.toDateString()}</Text>
-            {selectedDateSchedules.map((schedule, index) => (
-              <Text key={index}>{schedule.event}</Text>
-            ))}
-          </View>
-        )}
-      </>
+      <View style={styles.selectedDateBox}>
+        <Text style={styles.selectedDateText}>
+          {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일의 일정
+        </Text>
+        <FlatList
+          data={selectedDateSchedules}
+          keyExtractor={(item) => item.sid}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+            style={styles.scheduleItem}
+            onPress={() => handleSchedulePress(item.sid)}
+          >
+            <Text style={styles.scheduleBoxText}>일정명: {item.event}</Text>
+            <Text style={styles.scheduleBoxText}>시작 날짜: {new Date(item.startDate).toLocaleDateString([],{month: '2-digit', day:'2-digit'})}</Text>
+            <Text style={styles.scheduleBoxText}>시작 시각: {new Date(item.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+            <Text style={styles.scheduleBoxText}>종료 날짜: {new Date(item.endDate).toLocaleDateString([],{month: '2-digit',day:'2-digit'})}</Text>
+            <Text style={styles.scheduleBoxText}>종료 시각: {new Date(item.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+          </TouchableOpacity>
+          )}
+        />
+      </View>
     );
   };
 
@@ -209,21 +192,27 @@ import { PanGestureHandler,State } from 'react-native-gesture-handler';
       <View style={styles.calendarBox}>
         <PanGestureHandler onHandlerStateChange={handleSwipe}>
           <Animated.View style={[styles.calendar, { transform: [{ translateX }] }]}>
-            {renderCalendar(currentDate)}
+            <View>
+              <Text style={styles.header}>
+                {currentDate.getFullYear()}년 {currentDate.getMonth() + 1}월
+              </Text>
+            </View>
+            {calendar}
           </Animated.View>
         </PanGestureHandler>
         <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('ScheduleInput')}>
           <Text style={styles.buttonText}>일정 추가</Text>
         </TouchableOpacity>
+        {renderScheduleList()}
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  header:{
-    fontSize:25,
-    marginBottom:20,
+  header: {
+    fontSize: 25,
+    marginBottom: 20,
     textAlign: 'center',
   },
   container: {
@@ -235,6 +224,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 10,
+    marginBottom: 10,
   },
   row: {
     flexDirection: 'row',
@@ -242,7 +232,6 @@ const styles = StyleSheet.create({
   },
   weekCells: {
     borderWidth: 0,
-    borderColor: '#000',
     width: '13%',
     height: 65,
     alignItems: 'center',
@@ -252,41 +241,52 @@ const styles = StyleSheet.create({
     height: 12,
     marginTop: 2,
     borderRadius: 2,
-    width:'115%',
-    zIndex: 999, //overlap
+    width: '115%',
   },
-  scheduleText: {
-    fontSize: 11,
-    color: 'black',
-    textAlign:'center',
+  scheduleText1: {
+    fontSize: 10,
+    textAlign: 'center',
   },
-  selectedDateBox: {
-    position: 'absolute',
-    top: '10%',
-    left: '80%',
-    transform: [{ translateX: -150 }, { translateY: -50 }],
-    backgroundColor: 'white',
-    width:'50%',
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: 'black',
-    borderRadius: 10,
-    zIndex: 999, //overlap
+  scheduleText2: {
+    fontSize: 10,
+    textAlign: 'center',
+    color:'white',
   },
-  selectedDateText: {
-    fontSize: 16,
-    color: 'black',
-    marginBottom: 10,
+  scheduleBoxText: {
+    fontSize: 13,
+    textAlign: 'center',
   },
   addButton: {
     backgroundColor: '#7030B8',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
-    marginbottom:10,
+    marginBottom: 10,
   },
   buttonText: {
     color: 'white',
+  },
+  selectedDateBox: {
+    position: 'absolute',
+    top: 20,
+    left: 10,
+    right: 10,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 10,
+    zIndex: 999,
+    padding: 10,
+  },
+  selectedDateText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  scheduleItem: {
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
 });
 
